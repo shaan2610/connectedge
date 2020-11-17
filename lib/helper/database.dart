@@ -15,9 +15,12 @@ class DatabaseMethods{
   }
 
   uploadUserInfo(userMap){
-    Firestore.instance.collection("users")
-        .add(userMap).catchError((e){
-          print(e.toString());
+    DocumentReference documentReference = Firestore.instance.collection('users').document();
+    documentReference.setData({
+      'name' : userMap['name'],
+      'email' : userMap['email'],
+      'profileUrl' : "https://cdn3.iconfinder.com/data/icons/galaxy-open-line-gradient-i/200/contacts-512.png",
+      'id' : documentReference.documentID
     });
   }
 
@@ -49,4 +52,5 @@ class DatabaseMethods{
         .where("users", arrayContains: userName)
         .snapshots();
   }
+
 }

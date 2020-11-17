@@ -1,11 +1,8 @@
-import 'package:connectedge2/helper/authentication.dart';
-import 'package:connectedge2/screens/sign_in.dart';
-import 'package:connectedge2/screens/sign_up.dart';
 import 'package:flutter/material.dart';
 Widget appBarMain(BuildContext context){
     return AppBar(
       centerTitle: true,
-      backgroundColor : Colors.black,
+      backgroundColor : Colors.grey[850],
       title: Text('𝕮𝖔𝖓𝖓𝖊𝖈𝖙 𝕰𝖉𝖌𝖊',
           style: TextStyle(
             fontSize: 25.0,
@@ -67,6 +64,9 @@ InputDecoration textfield2()
 Widget buttons1(String inp,BuildContext context)
 {
   return RaisedButton(
+    onPressed: () {
+      //
+    },
     //color: Colors.green,
     //hoverColor: Colors.green,
     child : Text(
@@ -102,7 +102,9 @@ TextStyle simpleTextStyle() {
 
 TextStyle mediumTextStyle() {
   return TextStyle(
-    color: Colors.white,
-    fontSize: 17
+      color: Colors.white,
+      fontSize: 17
   );
 }
+
+String profilePicUrl;

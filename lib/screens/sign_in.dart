@@ -65,6 +65,7 @@ showAlertDialog(BuildContext context) {
     },
   );
 }
+
 class SignIn extends StatefulWidget {
   final Function toggle;
   SignIn(this.toggle);

@@ -1,12 +1,8 @@
 import 'package:connectedge2/helper/authentication.dart';
 import 'package:connectedge2/helper/database.dart';
-import 'package:connectedge2/helper/helperfunctions.dart';
-import 'package:connectedge2/screens/chatroomscreen.dart';
 import 'package:connectedge2/services/auth.dart';
-import 'package:connectedge2/widgets/widget.dart';
 import 'package:flutter/material.dart';
 
-import 'forgotPassword.dart';
 
 showAlertDialog(BuildContext context) {
   // Create button

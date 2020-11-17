@@ -1,7 +1,6 @@
 import 'package:connectedge2/helper/helperfunctions.dart';
 import 'package:connectedge2/screens/chatroomscreen.dart';
 import 'package:flutter/material.dart';
-import 'screens/sign_in.dart';
 import 'helper/authentication.dart';
 
 void main() {

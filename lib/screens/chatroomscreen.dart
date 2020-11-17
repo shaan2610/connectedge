@@ -2,7 +2,9 @@ import 'package:connectedge2/helper/authentication.dart';
 import 'package:connectedge2/helper/constants.dart';
 import 'package:connectedge2/helper/database.dart';
 import 'package:connectedge2/helper/helperfunctions.dart';
+import 'package:connectedge2/screens/about_us.dart';
 import 'package:connectedge2/screens/conversation_screen.dart';
+import 'package:connectedge2/screens/issue_screen.dart';
 import 'package:connectedge2/screens/profile_page.dart';
 import 'package:connectedge2/screens/search.dart';
 import 'package:connectedge2/services/auth.dart';
@@ -18,7 +20,6 @@ class _ChatRoomState extends State<ChatRoom> {
 
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
-
   Stream chatRoomsStream;
 
   Widget chatRoomList() {
@@ -30,7 +31,7 @@ class _ChatRoomState extends State<ChatRoom> {
             itemBuilder: (context, index){
               return ChatRoomTile(
                 userName: snapshot.data.documents[index].data["chatroomid"]
-                  .toString().replaceAll("_", "")
+                    .toString().replaceAll("_", "")
                     .replaceAll(Constants.myName, ""),
                 chatRoomId: snapshot.data.documents[index].data["chatroomid"],
               );
@@ -52,7 +53,10 @@ class _ChatRoomState extends State<ChatRoom> {
         chatRoomsStream = value;
       });
     });
-    setState(() {
+    databaseMethods.getUserByUserEmail(Constants.myEmail).then((result) async {
+      setState(() {
+        profilePicUrl = result.documents[0].data["profileUrl"];
+      });
     });
   }
   Widget build(BuildContext context) {
@@ -67,26 +71,32 @@ class _ChatRoomState extends State<ChatRoom> {
                 child: Center(
                   child: Column(
                     children: <Widget>[
+                      SizedBox(height: 30,),
                       Container(
                         width: 100,
                         height: 100,
-                        margin: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 10.0),
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image:DecorationImage(image: NetworkImage("https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png")),
-                        ),
+                            border: Border.all(
+                                width: 4,
+                                color: Theme.of(context).scaffoldBackgroundColor),
+                            boxShadow: [
+                              BoxShadow(
+                                  spreadRadius: 2,
+                                  blurRadius: 10,
+                                  color: Colors.black.withOpacity(0.1),
+                                  offset: Offset(0, 10))
+                            ],
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: (profilePicUrl == null ? NetworkImage('https://cdn3.iconfinder.com/data/icons/galaxy-open-line-gradient-i/200/contacts-512.png') : NetworkImage(profilePicUrl))
+                            )),
                       ),
+                      SizedBox(height: 10,),
                       Text(
                           "${Constants.myName}",
                           style:TextStyle(
                             fontSize: 22,
-                            color: Colors.white,
-                          )
-                      ),
-                      SizedBox(height: 5,),
-                      Text(
-                          "${Constants.myEmail}",
-                          style:TextStyle(
                             color: Colors.white,
                           )
                       ),
@@ -125,21 +135,13 @@ class _ChatRoomState extends State<ChatRoom> {
                       color: Colors.white,
                     ),
                   ),
-                  onTap: null,
-                ),
-              ),
-              Container(
-                color: Colors.grey[800],
-                child: ListTile(
-                  leading: Icon(Icons.settings,color: Colors.white,),
-                  title:Text(
-                    "Settings",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  onTap: null,
+                  onTap: () {
+                    Navigator.push(
+                        context,MaterialPageRoute(
+                      builder: (context)=> RaiseIssue(),
+                    )
+                    );
+                  },
                 ),
               ),
               // Logout Button
@@ -176,7 +178,13 @@ class _ChatRoomState extends State<ChatRoom> {
                       color: Colors.white,
                     ),
                   ),
-                  onTap: null,
+                  onTap: () {
+                    Navigator.push(
+                        context,MaterialPageRoute(
+                      builder: (context)=> AboutUs(),
+                    )
+                    );
+                  },
                 ),
               ),
               Expanded(
@@ -187,9 +195,9 @@ class _ChatRoomState extends State<ChatRoom> {
             ],
           ) ,
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.grey[800],
         appBar: AppBar(
-          backgroundColor : Colors.black,
+          backgroundColor : Colors.grey[850],
           centerTitle: true,
           title: Text('𝕮𝖔𝖓𝖓𝖊𝖈𝖙 𝕰𝖉𝖌𝖊',
               style: TextStyle(
@@ -201,6 +209,7 @@ class _ChatRoomState extends State<ChatRoom> {
         ),
         body: chatRoomList(),
         floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.grey[850],
           child: Icon(Icons.search),
           onPressed: (){
             Navigator.push(context, MaterialPageRoute(
@@ -212,36 +221,56 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 }
 
-class ChatRoomTile extends StatelessWidget {
+class ChatRoomTile extends StatefulWidget {
 
   final String userName;
   final String chatRoomId;
   ChatRoomTile({this.userName, this.chatRoomId});
 
   @override
+  _ChatRoomTileState createState() => _ChatRoomTileState();
+}
+
+class _ChatRoomTileState extends State<ChatRoomTile> {
+  String picUrl;
+
+  getProfilePics() async {
+    await DatabaseMethods().getUserByUsername(widget.userName)
+        .then((result) async {
+      var userDetails = result;
+      setState(() {
+        picUrl = userDetails.documents[0].data["profileUrl"];
+      });
+    });
+  }
+  @override
+  void initState() {
+    getProfilePics();
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(
-          builder: (context) => ConversationScreen(chatRoomId)
+          builder: (context) => ConversationScreen(widget.chatRoomId)
         ));
       },
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: Row(
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        child: Column(
           children: [
-            Container(
-              height: 40,
-              width: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(40)
-              ),
-              child: Text("${userName.substring(0, 1).toUpperCase()}", style: mediumTextStyle(),),
+            Row(
+              children: [
+                CircleAvatar(
+                  minRadius: 25.0,
+                  backgroundColor: Colors.white,
+                  backgroundImage: (picUrl == null ? NetworkImage('https://cdn3.iconfinder.com/data/icons/galaxy-open-line-gradient-i/200/contacts-512.png') : NetworkImage(picUrl)),
+                ),
+                SizedBox(width: 8,),
+                Text(widget.userName, style: mediumTextStyle(),),
+              ],
             ),
-            SizedBox(width: 8,),
-            Text(userName, style: mediumTextStyle(),)
           ],
         ),
       ),

@@ -15,24 +15,20 @@ class AuthMethods {
             print(e.toString());
         }
     }
-    Future signUpWithEmailPassword(String email, String password) async
-    {
+    Future signUpWithEmailPassword(String email, String password) async     {
       try{
         AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
         // ignore: deprecated_member_use
         FirebaseUser firebaseUser = result.user;
         return _userFromFirebaseUser(firebaseUser);
-      }catch(e){
+      } catch(e){
         print(e.toString());
       }
     }
-    Future resetPassword(String email) async
-    {
+    Future resetPassword(String email) async     {
       return await _auth.sendPasswordResetEmail(email: email);
     }
-    Future signOut() async
-    {
+    Future signOut() async     {
         return await _auth.signOut();
     }
-
 }
